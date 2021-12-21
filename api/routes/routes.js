@@ -18,4 +18,24 @@ router.get('/api/movie/:id', (req, res) => {
 	.catch((err) => res.status(500).jsonp({ status: 500, message: err.message }))
 })
 
+// Create movies
+router.post('/api/movie', (req, res) => {
+	const newMovie = {
+		title: req.body.title,
+		description: req.body.description,
+		year: req.body.year,
+		duration: req.body.duration,
+		rating: 0,
+		like: 0,
+		dislike: 0
+	}
+
+	return knex.insert(newMovie).into('movie').then(() => {
+		res.json({
+			success: true,
+			message: 'Movie Added!'
+		})
+	});
+})
+
 module.exports = router;
