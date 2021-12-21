@@ -47,4 +47,19 @@ router.delete('/api/movie/:id', (req, res) => {
 	.jsonp({ status: 200, message: 'Movie successfully deleted!' }))
 	.catch((err) => res.status(500).jsonp({ status: 500, message: err.message }))
 })
+
+// Update movie
+router.put('/api/movie/:id', (req, res) => {
+	const updateMovie = {
+		title: req.body.title,
+		description: req.body.description,
+		year: req.body.year,
+		duration: req.body.duration,
+	}
+	knex('movie')
+	.where({ title: req.params.id })
+	.update(updateMovie)
+	.then(() => res.status(200).jsonp({ status: 200, message: 'Movie updated!' }))
+})
+
 module.exports = router;
