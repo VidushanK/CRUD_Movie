@@ -11,9 +11,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('build'));
 
-app.get('/', (req,res) => {
-	res.send('hello world!')
+app.get('/', (req, res) => {
+	knex.select('title', 'description', 'year').from('movie').then((movie) => res.json(movie))
 })
+
 app.listen(PORT, () => {
 	console.log(`Server running at http://localhost:${PORT}`);
 })
