@@ -38,4 +38,13 @@ router.post('/api/movie', (req, res) => {
 	});
 })
 
+// Delete movie
+router.delete('/api/movie/:id', (req, res) => {
+	knex.del()
+	.from('movie')
+	.where({ title: req.params.id })
+	.then((movie) => res.status(200)
+	.jsonp({ status: 200, message: 'Movie successfully deleted!' }))
+	.catch((err) => res.status(500).jsonp({ status: 500, message: err.message }))
+})
 module.exports = router;
