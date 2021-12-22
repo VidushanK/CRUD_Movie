@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const knexConfig = require("../../knexfile.js")
 const knex = require("knex")(knexConfig);
+const { calculateRatings } = require('../helpers/rating')
 
 // Output all movies
 router.get('/api/movie/all', (req, res) => {
@@ -60,6 +61,36 @@ router.put('/api/movie/:id', (req, res) => {
 	.where({ title: req.params.id })
 	.update(updateMovie)
 	.then(() => res.status(200).jsonp({ status: 200, message: 'Movie updated!' }))
+})
+
+// Like movie
+router.put('/api/movie/like/:id', (req, res) => {
+	knex('movie')
+		.where({ title: req.params.id })
+		.increment('like', 1)
+		.then(async () => {
+			const like = await knex.select('like').from('movie').where({ title: req.params.id }).then((like) => { return like[0]['like'] })
+			const dislike = await knex.select('dislike').from('movie').where({ title: req.params.id }).then((dislike) => { return dislike[0]['dislike'] })
+			console.log(like, dislike)
+			calculateRatings(like, dislike, req.params.id)
+		})
+		.then(res.status(200).jsonp({ status: 200, message: 'Successfully liked movie' }))
+
+})
+
+// Dislike movie
+router.put('/api/movie/dislike/:id', (req, res) => {
+	knex('movie')
+		.select()
+		.where({ title: req.params.id })
+		.increment('dislike', 1)
+		.then(async () => {
+			const like = await knex.select('like').from('movie').where({ title: req.params.id }).then((like) => { return like[0]['like'] })
+			const dislike = await knex.select('dislike').from('movie').where({ title: req.params.id }).then((dislike) => { return dislike[0]['dislike'] })
+			console.log(like, dislike)
+			calculateRatings(like, dislike, req.params.id)
+		})
+		.then(res.status(200).jsonp({ status: 200, message: 'Successfully disliked movie' }))
 })
 
 module.exports = router;
